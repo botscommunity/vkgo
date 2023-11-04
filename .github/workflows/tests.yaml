@@ -1,0 +1,31 @@
+name: Testing Workflow
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.55
+      - name: Run tests
+        run: go test -v ./...
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          USER_TOKEN: ${{ secrets.USER_TOKEN }}
+          GROUP_ID: ${{ secrets.GROUP_ID }}
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
