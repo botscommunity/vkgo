@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/botscommunity/vkgo/internal/pkg/consts"
+
 	"github.com/botscommunity/botsgo"
 	"go.uber.org/zap"
 )
@@ -15,7 +17,7 @@ import (
 // 🏡 A token is a key to access your application (bot)
 // ☕ Version - VK API version, it is strongly recommended to set 5.154000
 // 📺 IsGroup is set automatically, guided by the information about the created bot
-// 🧢 Logger is a pointer to the Logger object of the logrus library. Used during development to detect problems during operation
+// 🧢 Logger is a pointer to the Logger object of the zap library. Used during development to detect problems during operation
 // 👆 ContentType a simpler  format of response data — https://en.wikipedia.org/wiki/MessagePack
 // 💕 Limit - limiting the number of requests per second depending on the type of bot
 // 🌿 errorHandler performs the task of transmitting an error for further processing.
@@ -33,17 +35,11 @@ type Bot struct {
 	*botsgo.Bot
 }
 
-const (
-	DefaultVersion    = 5.154000
-	CommunityRPSLimit = 19
-	UserRPSLimit      = 2
-)
-
 func NewBot(token string, communityID int, properties ...any) (*Bot, error) {
 	return New(&Bot{
 		ID:    communityID,
 		Token: token,
-		Limit: CommunityRPSLimit,
+		Limit: consts.CommunityAPILimit,
 	}, properties)
 }
 
@@ -51,7 +47,7 @@ func NewUser(token string, userID int, properties ...any) (*Bot, error) {
 	return New(&Bot{
 		ID:    userID,
 		Token: token,
-		Limit: CommunityRPSLimit,
+		Limit: consts.CommunityAPILimit,
 	}, properties)
 }
 
@@ -70,9 +66,9 @@ func New(properties ...any) (*Bot, error) {
 	client.Logger = zap.NewNop()
 
 	bot := &Bot{
-		Version:     DefaultVersion,
+		Version:     consts.DefaultAPIVersion,
 		ContentType: "application/msgpack",
-		Limit:       UserRPSLimit,
+		Limit:       consts.UserAPILimit,
 		Bot:         client,
 	}
 
@@ -174,7 +170,7 @@ func (bot *Bot) defineID() {
 	if group := bot.GetGroup(); group.Error == nil {
 		bot.ID = group.ID
 		bot.IsGroup = true
-		bot.Limit = CommunityRPSLimit
+		bot.Limit = consts.CommunityAPILimit
 	} else if user := bot.GetUser(); user.Error == nil {
 		bot.ID = user.ID
 	}

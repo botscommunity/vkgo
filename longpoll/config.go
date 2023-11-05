@@ -4,12 +4,12 @@ import (
 	"github.com/botscommunity/vkgo/scene"
 )
 
-func (lp *Longpoll) SetTimeout(time int) *Longpoll {
+func (lp *LongPoll) SetTimeout(time int) *LongPoll {
 	lp.Timeout = time
 	return lp
 }
 
-func (lp *Longpoll) SetScenes(scenes *scene.Scenes) *Longpoll {
+func (lp *LongPoll) SetScenes(scenes *scene.Scenes) *LongPoll {
 	lp.Scenes = scenes
 	return lp
 }

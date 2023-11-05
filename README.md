@@ -39,7 +39,10 @@ import (
 )
 
 func main() {
-  bot := api.New(os.Getenv("TOKEN"))
+  bot, err := api.New(os.Getenv("TOKEN"))
+  if err != nil {
+	  panic(err)
+  }
 
   messageScene := scene.Message(func(bot *api.Bot, message update.Message) {
     bot.SendMessage(message.ChatID, "echo message: "+message.Text)

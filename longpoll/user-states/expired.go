@@ -8,9 +8,11 @@ import (
 )
 
 func expired(bot *api.Bot, session *responses.LongPollServer, messages Messages, _ scene.Scenes) update.Updates {
-	if server := bot.GetUserLongPollServer(); server.Error.Code == 0 {
+	if server := bot.GetUserLongPollServer(); server.Error == nil {
 		session.Key = server.Key
 	}
 
-	return update.Updates{TS: messages.TS}
+	return update.Updates{
+		TS: messages.TS,
+	}
 }

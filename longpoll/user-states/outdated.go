@@ -10,5 +10,7 @@ import (
 func outdated(_ *api.Bot, session *responses.LongPollServer, messages Messages, _ scene.Scenes) update.Updates {
 	session.TS = messages.TS
 
-	return update.Updates{TS: messages.TS}
+	return update.Updates{
+		TS: messages.TS,
+	}
 }

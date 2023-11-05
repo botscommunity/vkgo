@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/botscommunity/vkgo/internal/pkg/consts"
 	"github.com/botscommunity/vkgo/internal/pkg/responses"
 	communityStates "github.com/botscommunity/vkgo/longpoll/community-states"
 	userStates "github.com/botscommunity/vkgo/longpoll/user-states"
@@ -22,7 +23,7 @@ func Start(properties ...any) *responses.Error {
 	return lp.Start()
 }
 
-func (lp *Longpoll) Start() *responses.Error {
+func (lp *LongPoll) Start() *responses.Error {
 	if lp.Bot == nil {
 		return responses.NewInternalError(ErrSessionClosed)
 	}
@@ -33,14 +34,14 @@ func (lp *Longpoll) Start() *responses.Error {
 
 	updates := update.Updates{}
 
-	switch lp.mode {
-	case communityBot:
+	switch lp.BotType {
+	case consts.CommunityBotType:
 		for {
 			if _, err := communityUpdates(lp, updates); err != nil {
 				return err
 			}
 		}
-	case userBot:
+	case consts.UserBotType:
 		for {
 			if _, err := userUpdates(lp, updates); err != nil {
 				return err
@@ -51,12 +52,12 @@ func (lp *Longpoll) Start() *responses.Error {
 	return nil
 }
 
-func communityUpdates(lp *Longpoll, updates update.Updates) (update.Updates, *responses.Error) {
+func communityUpdates(lp *LongPoll, updates update.Updates) (update.Updates, *responses.Error) {
 	if lp.Session.Server == "" {
 		return update.Updates{}, responses.NewInternalError(ErrSessionClosed)
 	}
 
-	link := fmt.Sprintf("%s?act=a_check&key=%s&ts=%v&wait=%d&mode=3&version=%f", lp.Session.Server, lp.Session.Key, lp.Session.TS, lp.Timeout, lp.Bot.Version)
+	link := fmt.Sprintf("%s?act=a_check&key=%s&ts=%v&wait=%d&mode=%d&version=%f", lp.Session.Server, lp.Session.Key, lp.Session.TS, lp.Timeout, lp.Mode, lp.Bot.Version)
 	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, link, nil)
 
 	if err != nil {
@@ -108,14 +109,14 @@ func communityUpdates(lp *Longpoll, updates update.Updates) (update.Updates, *re
 	return updates, responses.NewInternalError(err)
 }
 
-func userUpdates(lp *Longpoll, updates update.Updates) (update.Updates, *responses.Error) {
+func userUpdates(lp *LongPoll, updates update.Updates) (update.Updates, *responses.Error) {
 	if lp.Session.Server == "" {
 		return update.Updates{}, responses.NewInternalError(ErrSessionClosed)
 	}
 
 	sessionTS := defineSessionTS(lp.Session.TS)
 
-	link := fmt.Sprintf("https://%s?act=a_check&key=%s&ts=%+v&wait=%d&mode=3&version=%d", lp.Session.Server, lp.Session.Key, sessionTS, lp.Timeout, lp.Session.Version)
+	link := fmt.Sprintf("https://%s?act=a_check&key=%s&ts=%+v&wait=%d&mode=%d&version=%d", lp.Session.Server, lp.Session.Key, sessionTS, lp.Timeout, lp.Mode, lp.Session.Version)
 	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, link, nil)
 
 	if err != nil {

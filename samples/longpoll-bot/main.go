@@ -18,5 +18,10 @@ func main() {
 
 	messageScene := scene.Message(scenes.NewMessageScene())
 
-	log.Fatalln(longpoll.Start(bot, messageScene))
+	lp, errLp := longpoll.New(bot, messageScene)
+	if errLp != nil {
+		panic(errLp)
+	}
+
+	log.Fatalln(lp.Start())
 }

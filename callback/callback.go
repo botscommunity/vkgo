@@ -5,7 +5,7 @@ import (
 	"github.com/botscommunity/vkgo/scene"
 )
 
-// Callback - structure of the connected bot.
+// Callback 🌍 is a configuration structure of bots, scenes, routers, and "everyone".
 type Callback struct {
 	Bots     map[int]*api.Bot
 	Scenes   *scene.Scenes
@@ -13,13 +13,16 @@ type Callback struct {
 	everyone bool
 }
 
-// New - server creation
-// Accepts the option pointer argument and optional scenes
-// Returns server options.
+// New 🌠 returns an instance of *Callback
+// Accepts 🤖 *api.Bot or 🎪 *scene.Scenes arguments.
 func New(properties ...any) *Callback {
 	cb := &Callback{
 		Bots:   make(map[int]*api.Bot),
 		Scenes: scene.New(),
+	}
+
+	cb.Router = Router{
+		Config: cb,
 	}
 
 	for _, property := range properties {
@@ -29,10 +32,6 @@ func New(properties ...any) *Callback {
 		case *scene.Scenes:
 			cb.Scenes = property
 		}
-	}
-
-	cb.Router = Router{
-		Config: cb,
 	}
 
 	return cb

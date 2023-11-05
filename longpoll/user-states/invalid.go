@@ -10,5 +10,7 @@ import (
 func invalid(_ *api.Bot, session *responses.LongPollServer, messages Messages, _ scene.Scenes) update.Updates {
 	session.Version = messages.MinVersion
 
-	return update.Updates{TS: messages.TS}
+	return update.Updates{
+		TS: messages.TS,
+	}
 }

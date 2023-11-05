@@ -9,7 +9,9 @@ import (
 )
 
 func standard(bot *api.Bot, session *responses.LongPollServer, messages Messages, scenes scene.Scenes) update.Updates {
-	updates := update.Updates{TS: messages.TS}
+	updates := update.Updates{
+		TS: messages.TS,
+	}
 
 	for _, upd := range messages.Updates {
 		go func(upd []any) {
